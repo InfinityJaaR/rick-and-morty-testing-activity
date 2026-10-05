@@ -47,6 +47,55 @@ Una aplicación web moderna para explorar el universo de Rick and Morty, constru
 
 4.  Abrir [http://localhost:3000](http://localhost:3000) en tu navegador.
 
+## 🧪 Pruebas Unitarias
+
+Las pruebas usan [Vitest](https://vitest.dev/) con [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) sobre `jsdom`, y la cobertura se mide con el proveedor `v8`.
+
+### Comandos
+
+```bash
+pnpm test          # modo watch
+pnpm test:run      # ejecución única
+pnpm coverage      # vitest run --coverage (reporte en consola + HTML en coverage/)
+```
+
+La configuración está en [`vitest.config.ts`](vitest.config.ts). Exige un **mínimo de 80 %** en statements, branches, functions y lines (`coverage.thresholds`), y el comando falla si alguna métrica queda por debajo.
+
+### Estructura
+
+Cada archivo de prueba vive junto al código que prueba (`*.test.ts(x)`):
+
+| Archivo | Qué se prueba |
+|---|---|
+| `src/lib/api.test.ts` | Cliente de la API: URLs, página por defecto, manejo de errores y normalización de `getEpisodes` (objeto único → array, lista vacía sin petición). `fetch` está mockeado. |
+| `src/components/CharacterCard.test.tsx` | Datos del personaje, imagen, enlace al detalle y color del indicador según el estado. |
+| `src/components/Pagination.test.tsx` | Enlaces anterior/siguiente habilitados o deshabilitados en la primera página, una intermedia, la última y una página única. |
+| `src/app/page.test.tsx` | Server Component de inicio: lectura de `?page=`, una tarjeta por personaje y propagación de errores. |
+| `src/app/character/[id]/page.test.tsx` | Detalle: extracción de IDs de episodios, formato de fecha, `type` vacío → "Unknown", estado y episodios. |
+| `src/app/error.test.tsx` | Mensaje de error, log en consola y botón "Try again" → `reset()`. |
+| `src/app/loading.test.tsx` | Skeletons de carga. |
+| `src/app/layout.test.tsx` | Metadata, fuentes, header, `children` y footer. |
+
+Los datos de prueba compartidos están en `src/test/fixtures.ts`. En [`vitest.setup.tsx`](vitest.setup.tsx) se mockea `next/image` globalmente.
+
+### Reporte de cobertura
+
+El reporte se incluye en el repositorio:
+
+- HTML: [`coverage/index.html`](coverage/index.html)
+- Resumen de consola: [`coverage/coverage-summary.txt`](coverage/coverage-summary.txt)
+
+| Métrica | Cobertura |
+|---|---|
+| Statements | 100 % (46/46) |
+| Branches | 100 % (29/29) |
+| Functions | 100 % (16/16) |
+| Lines | 100 % (45/45) |
+
+Captura del resumen en consola:
+
+![Resumen de cobertura en consola](docs/coverage-console.png)
+
 ## 🚀 Despliegue
 
 La forma más sencilla de desplegar esta aplicación es utilizando [Vercel](https://vercel.com/new).
